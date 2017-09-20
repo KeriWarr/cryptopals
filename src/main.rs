@@ -12,17 +12,8 @@ fn hex_to_base64(s: String) -> String {
     return byte_array_to_base64(hex_to_byte_array(s));
 }
 
-// #[test]
-// fn it_converts_hex_to_base64() {
-//     let hex = "49276d206b696c6c696e6720796f757220627261696e206c69
-//     6b65206120706f69736f6e6f7573206d757368726f6f6d".to_string();
-//     let expected = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9
-//     vim pc29ub3VzIG11c2hyb29t".to_string();
-//     assert_eq!(hex_to_base64(hex), expected);
-// }
-
 fn byte_array_to_base64(v: Vec<u8>) -> String {
-    return "".to_string();
+    return v[1].to_string();
 }
 
 fn hex_to_byte_array(s: String) -> Vec<u8> {
@@ -49,9 +40,25 @@ fn hex_ascii_to_int(n: u8) -> u8 {
     panic!("invalid hex ascii value!");
 }
 
-#[test]
-fn it_converts_hex_asciin_to_int() {
-    let hex_ascii = 48;
-    let expected = 0;
-    assert_eq!(hex_ascii_to_int(hex_ascii), expected);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_converts_hex_ascii_to_int() {
+        let hex_ascii = 48;
+        let expected = 0;
+        assert_eq!(hex_ascii_to_int(hex_ascii), expected);
+    }
+
+    #[test]
+    fn it_converts_hex_to_base64() {
+        let hex = "49276d206b696c6c696e6720796f757220627261696e206c696b6520612\
+                   0706f69736f6e6f7573206d757368726f6f6d"
+            .to_string();
+        let expected = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG\
+                        11c2hyb29t"
+            .to_string();
+        assert_eq!(hex_to_base64(hex), expected);
+    }
 }
