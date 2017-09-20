@@ -29,7 +29,8 @@
             "type": "shell",
             "command": "cargo",
             "args": [
-                "test"
+                "test",
+                "--doc"
             ],
             "group": "test",
             "problemMatcher": "$rustc"
