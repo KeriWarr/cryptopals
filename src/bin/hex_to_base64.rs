@@ -16,6 +16,6 @@ fn main() {
     if args.len() < 1 {
         std::process::exit(1);
     }
-    println!("{}", hex_to_base64(&args[0]));
+    println!("{}", hex_to_base64(&args[1]));
     std::process::exit(0);
 }
