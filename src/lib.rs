@@ -3,4 +3,4 @@
 //!
 
 pub mod string_utils;
-pub mod fixed_xor;
+pub mod xor;

@@ -9,7 +9,7 @@
 //!
 
 extern crate cryptopals;
-use cryptopals::fixed_xor::hex_fixed_xor;
+use cryptopals::xor::hex_fixed_xor;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
