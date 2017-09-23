@@ -1,9 +1,13 @@
 //!
-//! Logic for Set 1 - Problem 1
-//!
+//! Functions for:
+//! - converting string encodings into other string encodings
+//! - converting string encodings into byte vectors
+//! - converting byte vectors into string encodings
+
+use std::fmt::Write;
 
 ///
-/// Converts a hex string into a base64 string
+/// Generates a base64 encoding of a hex string
 ///
 /// # Panics
 /// - If `s` is not of even length
@@ -18,7 +22,7 @@ pub fn hex_to_base64(s: &String) -> String {
     byte_array_to_base64(&byte_array)
 }
 
-fn hex_to_byte_array(s: &String) -> Vec<u8> {
+pub fn hex_to_byte_array(s: &String) -> Vec<u8> {
     let mut v: Vec<u8> = Vec::new();
     let mut index = 0;
     while index < s.len() {
@@ -69,6 +73,15 @@ fn base_64_to_ascii(n: u8) -> u8 {
      } else {
          47
      })
+}
+
+pub fn byte_array_to_hex(v: &Vec<u8>) -> String {
+    let mut s = String::new();
+    for &byte in v {
+        write!(&mut s, "{:x}", byte).expect("Unable to write");
+    }
+
+    s
 }
 
 

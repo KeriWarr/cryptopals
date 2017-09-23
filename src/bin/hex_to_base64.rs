@@ -9,7 +9,7 @@
 //!
 
 extern crate cryptopals;
-use cryptopals::hex_to_base64::hex_to_base64;
+use cryptopals::string_utils::hex_to_base64;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
