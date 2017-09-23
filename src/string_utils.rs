@@ -87,6 +87,140 @@ pub fn byte_array_to_hex(v: &Vec<u8>) -> String {
 
 #[cfg(test)]
 mod tests {
+    mod hex_to_byte_array {
+        use super::super::hex_to_byte_array;
+
+        #[test]
+        fn it_converts_the_empty_string() {
+            let hex = "".to_string();
+            let expected = [];
+            assert_eq!(hex_to_byte_array(&hex), expected);
+        }
+
+        #[test]
+        fn it_converts_a_short_string() {
+            let hex = "4ac9".to_string();
+            let expected = [74, 201];
+            assert_eq!(hex_to_byte_array(&hex), expected);
+        }
+
+        #[test]
+        fn it_converts_a_long_string() {
+            let hex = "49276d206b696c6c696e6720796f757220627261696e206c696b652\
+                       06120706f"
+                .to_string();
+            let expected = [
+                73,
+                39,
+                109,
+                32,
+                107,
+                105,
+                108,
+                108,
+                105,
+                110,
+                103,
+                32,
+                121,
+                111,
+                117,
+                114,
+                32,
+                98,
+                114,
+                97,
+                105,
+                110,
+                32,
+                108,
+                105,
+                107,
+                101,
+                32,
+                97,
+                32,
+                112,
+                111,
+            ];
+            assert_eq!(hex_to_byte_array(&hex), expected);
+        }
+
+        #[test]
+        #[should_panic]
+        fn it_panics_on_odd_length_string() {
+            let hex = "4ac93".to_string();
+            hex_to_byte_array(&hex);
+        }
+
+        #[test]
+        #[should_panic]
+        fn it_panics_on_non_hex_characters() {
+            let hex = "4ag9".to_string();
+            hex_to_byte_array(&hex);
+        }
+    }
+
+    mod byte_array_to_hex {
+        use super::super::byte_array_to_hex;
+
+        #[test]
+        fn it_converts_the_empty_string() {
+            let byte_array = vec![];
+            let expected = "".to_string();
+            assert_eq!(byte_array_to_hex(&byte_array), expected);
+        }
+
+        #[test]
+        fn it_converts_a_short_string() {
+            let byte_array = vec![74, 201];
+            let expected = "4ac9".to_string();
+            assert_eq!(byte_array_to_hex(&byte_array), expected);
+        }
+
+        #[test]
+        fn it_converts_a_long_string() {
+            let byte_array = vec![
+                73,
+                39,
+                109,
+                32,
+                107,
+                105,
+                108,
+                108,
+                105,
+                110,
+                103,
+                32,
+                121,
+                111,
+                117,
+                114,
+                32,
+                98,
+                114,
+                97,
+                105,
+                110,
+                32,
+                108,
+                105,
+                107,
+                101,
+                32,
+                97,
+                32,
+                112,
+                111,
+            ];
+            let expected = "49276d206b696c6c696e6720796f757220627261696e206c696b652\
+                            06120706f"
+                .to_string();
+            assert_eq!(byte_array_to_hex(&byte_array), expected);
+        }
+    }
+
     mod hex_to_base64 {
         use super::super::hex_to_base64;
 
