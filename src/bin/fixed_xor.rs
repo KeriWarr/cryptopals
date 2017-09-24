@@ -13,9 +13,8 @@ use cryptopals::xor::hex_fixed_xor;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() < 2 {
-        std::process::exit(1);
+    if args.len() < 3 {
+        panic!("Not enough arguments");
     }
     println!("{}", hex_fixed_xor(&args[1], &args[2]));
-    std::process::exit(0);
 }

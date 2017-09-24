@@ -84,6 +84,19 @@ pub fn byte_array_to_hex(v: &Vec<u8>) -> String {
     s
 }
 
+pub fn bytes_to_ascii_string(v: &Vec<u8>) -> Option<String> {
+    let mut s = String::new();
+    for byte in v {
+        if *byte < 32 {
+            return None;
+        } else {
+            s.push(*byte as char);
+        }
+    }
+
+    Some(s)
+}
+
 
 #[cfg(test)]
 mod tests {
