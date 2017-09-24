@@ -35,7 +35,7 @@ fn fixed_xor(v1: &Vec<u8>, v2: &Vec<u8>) -> Vec<u8> {
     v
 }
 
-pub fn xor_cypher_decrypt_char_frequency(s: &String) -> String {
+pub fn xor_cypher_decrypt_char_frequency(s: &String) -> (String, f32) {
     let bytes = hex_to_byte_array(s);
     let mut min_score = f32::INFINITY;
     let mut best_candidate = "".to_string();
@@ -56,7 +56,7 @@ pub fn xor_cypher_decrypt_char_frequency(s: &String) -> String {
         }
     }
 
-    best_candidate
+    (best_candidate, min_score)
 }
 
 fn score_candidate(s: &String) -> f32 {
@@ -108,15 +108,16 @@ fn score_candidate(s: &String) -> f32 {
         score += letter_score;
     }
 
-    let mut modifier = 0.1;
+    let mut modifier = 2.0;
     for c in s.chars() {
-        if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' ' || c == '.' {
-            score -= modifier;
-            modifier *= 1.1;
+        if (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' ' || c == '.' || c == '\'' {
+            modifier *= 1.15;
         } else {
             modifier /= 1.2;
         }
     }
+    score -= modifier;
+    score += 1.0 / modifier;
 
     score
 }
@@ -127,10 +128,8 @@ pub fn detect_single_char_xor(v: &Vec<&str>) -> (usize, String) {
     let mut best_index = 0;
 
     for (index, s) in v.iter().enumerate() {
-        let best_decoding = xor_cypher_decrypt_char_frequency(&s.to_string());
-        let score = score_candidate(&best_decoding);
+        let (best_decoding, score) = xor_cypher_decrypt_char_frequency(&s.to_string());
         if score < min_score {
-            println!("{}, {}", score, best_decoding);
             min_score = score;
             best_cleartext = best_decoding;
             best_index = index;
@@ -183,7 +182,8 @@ mod tests {
             let hex = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
                 .to_string();
             let expected = "Cooking MC's like a pound of bacon".to_string();
-            assert_eq!(xor_cypher_decrypt_char_frequency(&hex), expected);
+            let (result, _) = xor_cypher_decrypt_char_frequency(&hex);
+            assert_eq!(result, expected);
         }
     }
 }

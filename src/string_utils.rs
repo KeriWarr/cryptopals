@@ -17,9 +17,8 @@ pub fn hex_to_base64(s: &String) -> String {
     if s.len() % 2 != 0 {
         panic!("Input hex string must have even length.");
     }
-    let byte_array = hex_to_byte_array(s);
 
-    byte_array_to_base64(&byte_array)
+    byte_array_to_base64(&hex_to_byte_array(s))
 }
 
 pub fn hex_to_byte_array(s: &String) -> Vec<u8> {
@@ -87,11 +86,11 @@ pub fn byte_array_to_hex(v: &Vec<u8>) -> String {
 pub fn bytes_to_ascii_string(v: &Vec<u8>) -> Option<String> {
     let mut s = String::new();
     for byte in v {
-        if *byte < 32 {
-            return None;
-        } else {
-            s.push(*byte as char);
-        }
+        // if *byte < 0 {
+        //     return None;
+        // } else {
+        s.push(*byte as char);
+        // }
     }
 
     Some(s)
