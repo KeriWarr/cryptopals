@@ -139,6 +139,17 @@ pub fn detect_single_char_xor(v: &Vec<&str>) -> (usize, String) {
     (best_index, best_cleartext)
 }
 
+pub fn repeating_key_xor(s: &String, key: &String) -> String {
+    let bytes = s.clone().into_bytes();
+    let key_bytes = key.clone().into_bytes();
+    let mut cypher = Vec::new();
+
+    for i in 0..bytes.len() {
+        cypher.push(key_bytes[i % key_bytes.len()]);
+    }
+    byte_array_to_hex(&fixed_xor(&bytes, &cypher))
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -184,6 +195,19 @@ mod tests {
             let expected = "Cooking MC's like a pound of bacon".to_string();
             let (result, _) = xor_cypher_decrypt_char_frequency(&hex);
             assert_eq!(result, expected);
+        }
+    }
+
+    mod repeating_key_xor {
+        use super::super::repeating_key_xor;
+
+        #[test]
+        fn it_solves_the_example() {
+            let input = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+                .to_string();
+            let key = "ICE".to_string();
+            let expected = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f".to_string();
+            assert_eq!(repeating_key_xor(&input, &key), expected);
         }
     }
 }

@@ -77,7 +77,7 @@ fn base_64_to_ascii(n: u8) -> u8 {
 pub fn byte_array_to_hex(v: &Vec<u8>) -> String {
     let mut s = String::new();
     for &byte in v {
-        write!(&mut s, "{:x}", byte).expect("Unable to write");
+        write!(&mut s, "{:02x}", byte).expect("Unable to write");
     }
 
     s
