@@ -16,6 +16,6 @@ fn main() {
     if args.len() < 2 {
         panic!("Not enough arguments");
     }
-    let (result, _) = xor_cypher_decrypt_char_frequency(&args[1]);
+    let (result, _, _) = xor_cypher_decrypt_char_frequency(&args[1]);
     println!("{}", result);
 }

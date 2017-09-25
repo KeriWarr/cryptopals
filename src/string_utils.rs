@@ -74,6 +74,43 @@ fn base_64_to_ascii(n: u8) -> u8 {
      })
 }
 
+pub fn base_64_to_byte_array(s: &String) -> Vec<u8> {
+    let mut characters = 0;
+    let mut bytes: Vec<u8> = Vec::new();
+    let mut buffer: u16 = 0;
+
+    while characters < s.len() {
+        let value = base_64_char_to_u8(s.chars().nth(characters).unwrap());
+        let mut bits = (characters * 6) % 8;
+        buffer = buffer + ((value as u16) << (10 - bits));
+        characters += 1;
+        bits += 6;
+        if bits >= 8 {
+            let byte = ((buffer & 0b1111111100000000) >> 8) as u8;
+            buffer = buffer << 8;
+            bytes.push(byte);
+        }
+    }
+
+    bytes
+}
+
+fn base_64_char_to_u8(c: char) -> u8 {
+    (if c >= 'a' && c <= 'z' {
+         c as u8 - 71
+     } else if c >= 'A' && c <= 'Z' {
+         c as u8 - 65
+     } else if c >= '0' && c <= '9' {
+         c as u8 + 4
+     } else if c == '+' {
+         62
+     } else if c == '/' {
+         63
+     } else {
+         panic!("invalid base 64 character {}", c);
+     })
+}
+
 pub fn byte_array_to_hex(v: &Vec<u8>) -> String {
     let mut s = String::new();
     for &byte in v {

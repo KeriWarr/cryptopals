@@ -3,7 +3,8 @@
 use std::collections::HashMap;
 use std::str;
 use std::f32;
-use string_utils::{byte_array_to_hex, hex_to_byte_array, bytes_to_ascii_string};
+use string_utils::{byte_array_to_hex, hex_to_byte_array, bytes_to_ascii_string,
+                   base_64_to_byte_array};
 
 ///
 /// Generates an xor'd hex encoding of two hex strings
@@ -35,10 +36,11 @@ fn fixed_xor(v1: &Vec<u8>, v2: &Vec<u8>) -> Vec<u8> {
     v
 }
 
-pub fn xor_cypher_decrypt_char_frequency(s: &String) -> (String, f32) {
+pub fn xor_cypher_decrypt_char_frequency(s: &String) -> (String, f32, u8) {
     let bytes = hex_to_byte_array(s);
     let mut min_score = f32::INFINITY;
     let mut best_candidate = "".to_string();
+    let mut best_key = 0;
 
     for key in 0..255 as u8 {
         let cypher = vec![key; bytes.len()];
@@ -53,10 +55,11 @@ pub fn xor_cypher_decrypt_char_frequency(s: &String) -> (String, f32) {
         if score < min_score {
             min_score = score;
             best_candidate = ascii_string;
+            best_key = key;
         }
     }
 
-    (best_candidate, min_score)
+    (best_candidate, min_score, best_key)
 }
 
 fn score_candidate(s: &String) -> f32 {
@@ -128,7 +131,7 @@ pub fn detect_single_char_xor(v: &Vec<&str>) -> (usize, String) {
     let mut best_index = 0;
 
     for (index, s) in v.iter().enumerate() {
-        let (best_decoding, score) = xor_cypher_decrypt_char_frequency(&s.to_string());
+        let (best_decoding, score, _) = xor_cypher_decrypt_char_frequency(&s.to_string());
         if score < min_score {
             min_score = score;
             best_cleartext = best_decoding;
@@ -150,6 +153,88 @@ pub fn repeating_key_xor(s: &String, key: &String) -> String {
     byte_array_to_hex(&fixed_xor(&bytes, &cypher))
 }
 
+pub fn break_repeating_key_xor(s: &String) -> (String, String) {
+    let bytes = base_64_to_byte_array(s);
+    let mut best_sizes = [(f32::INFINITY, 0), (f32::INFINITY, 0)];
+    for keysize in 2..41 {
+        let mut total_distance: f32 = 0.0;
+        let mut blocks = 0;
+        while blocks < 4 {
+            if (blocks + 2) * keysize > bytes.len() {
+                break;
+            }
+            total_distance += hamming_distance(
+                &bytes[(blocks * keysize)..((blocks + 1) * keysize)],
+                &bytes[((blocks + 1) * keysize)..((blocks + 2) * keysize)],
+            ) as f32;
+            blocks += 1;
+        }
+        if blocks < 2 {
+            panic!("did not get to check enough blocks at keysize: {}", keysize);
+        }
+        let average_distance = total_distance / blocks as f32;
+        if average_distance < best_sizes[0].0 {
+            best_sizes[1] = best_sizes[0];
+            best_sizes[0] = (average_distance, keysize);
+        } else if average_distance < best_sizes[1].0 {
+            best_sizes[1] = (average_distance, keysize);
+        }
+    }
+
+    let mut best_key: Vec<u8> = Vec::new();
+    let mut best_score: f32 = f32::INFINITY;
+    let mut best_key_byte_cleartexts: Vec<String> = Vec::new();
+
+    for size in [best_sizes[0].1, best_sizes[1].1].iter() {
+        let mut blocks: Vec<&[u8]> = Vec::new();
+        let mut index = 0;
+        let mut key: Vec<u8> = Vec::new();
+        let mut key_byte_cleartexts: Vec<String> = Vec::new();
+        let mut total_score: f32 = 0.0;
+        while index * size + size <= bytes.len() {
+            blocks.push(&bytes[(index * size)..((index + 1) * size)]);
+            index += 1;
+        }
+
+        for key_byte_index in 0..(*size as usize) {
+            let mut key_byte_bytes: Vec<u8> = Vec::new();
+            for block in &blocks {
+                key_byte_bytes.push(block[key_byte_index]);
+            }
+            let (key_byte_cleartext, score, byte_key) =
+                xor_cypher_decrypt_char_frequency(&byte_array_to_hex(&key_byte_bytes));
+            key.push(byte_key);
+            total_score += score;
+            key_byte_cleartexts.push(key_byte_cleartext);
+        }
+
+        if total_score < best_score {
+            best_score = total_score;
+            best_key = key;
+            best_key_byte_cleartexts = key_byte_cleartexts;
+        }
+    }
+
+    (
+        best_key_byte_cleartexts.join(""),
+        bytes_to_ascii_string(&best_key).unwrap(),
+    )
+}
+
+// consider output overflow
+fn hamming_distance(v1: &[u8], v2: &[u8]) -> u8 {
+    if v1.len() != v2.len() {
+        panic!("vectors must be the same length");
+    }
+
+    let mut total = 0;
+
+    for (b1, b2) in v1.iter().zip(v2.iter()) {
+        total += (b1 ^ b2).count_ones() as u8;
+    }
+
+    total
+}
 
 #[cfg(test)]
 mod tests {
@@ -193,7 +278,7 @@ mod tests {
             let hex = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
                 .to_string();
             let expected = "Cooking MC's like a pound of bacon".to_string();
-            let (result, _) = xor_cypher_decrypt_char_frequency(&hex);
+            let (result, _, _) = xor_cypher_decrypt_char_frequency(&hex);
             assert_eq!(result, expected);
         }
     }
@@ -208,6 +293,21 @@ mod tests {
             let key = "ICE".to_string();
             let expected = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f".to_string();
             assert_eq!(repeating_key_xor(&input, &key), expected);
+        }
+    }
+
+    mod hamming_distance {
+        use super::super::hamming_distance;
+
+        #[test]
+        fn it_solves_the_example() {
+            let s1 = "this is a test".to_string();
+            let s2 = "wokka wokka!!!".to_string();
+            let expected = 37;
+            assert_eq!(
+                hamming_distance(&s1.into_bytes(), &s2.into_bytes()),
+                expected
+            );
         }
     }
 }
