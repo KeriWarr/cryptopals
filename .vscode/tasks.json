@@ -12,7 +12,10 @@
             "args": [
                 "build"
             ],
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": "$rustc"
         },
         {
@@ -40,6 +43,18 @@
             "command": "cargo",
             "args": [
                 "clean"
+            ]
+        },
+        {
+            "label": "cargo check",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "check"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$rustc"
             ]
         }
     ]

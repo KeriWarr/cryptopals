@@ -9,13 +9,16 @@
 //!
 
 extern crate cryptopals;
-use cryptopals::xor::xor_cypher_decrypt_char_frequency;
+use cryptopals::byte_stream::ByteStream;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
         panic!("Not enough arguments");
     }
-    let (result, _, _) = xor_cypher_decrypt_char_frequency(&args[1]);
-    println!("{}", result);
+
+    let mut bs = ByteStream::from_hex(&args[1]).unwrap();
+    let (byte, _score) = bs.break_single_byte_xor();
+    bs.byte_xor(byte);
+    println!("{}", bs.into_ascii());
 }

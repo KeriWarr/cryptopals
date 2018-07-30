@@ -9,12 +9,15 @@
 //!
 
 extern crate cryptopals;
-use cryptopals::xor::repeating_key_xor;
+use cryptopals::byte_stream::ByteStream;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 3 {
         panic!("Not enough arguments");
     }
-    println!("{}", repeating_key_xor(&args[1], &args[2]));
+    let mut bs1 = ByteStream::from_ascii(&args[1]).unwrap();
+    let bs2 = ByteStream::from_ascii(&args[2]).unwrap();
+    bs1.repeating_xor(&bs2);
+    println!("{}", bs1.into_hex());
 }

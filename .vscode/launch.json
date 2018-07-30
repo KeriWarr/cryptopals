@@ -8,7 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug hex_to_base64",
-            "program": "${workspaceRoot}/target/debug/hex_to_base64",
+            "program": "${workspaceRoot}/target/debug/1_hex_to_base64",
             "preLaunchTask": "cargo build",
             "args": [
                 "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
@@ -19,7 +19,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug fixed_xor",
-            "program": "${workspaceRoot}/target/debug/fixed_xor",
+            "program": "${workspaceRoot}/target/debug/2_fixed_xor",
             "preLaunchTask": "cargo build",
             "args": [
                 "1c0111001f010100061a024b53535009181c",
@@ -31,7 +31,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug single_byte_xor_cypher",
-            "program": "${workspaceRoot}/target/debug/single_byte_xor_cypher",
+            "program": "${workspaceRoot}/target/debug/3_single_byte_xor_cypher",
             "preLaunchTask": "cargo build",
             "args": [
                 "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
@@ -42,7 +42,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug detect_single_char_xor",
-            "program": "${workspaceRoot}/target/debug/detect_single_char_xor",
+            "program": "${workspaceRoot}/target/debug/4_detect_single_char_xor",
             "preLaunchTask": "cargo build",
             "args": [],
             "cwd": "${workspaceRoot}"
@@ -51,7 +51,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug break_repeating_key_xor",
-            "program": "${workspaceRoot}/target/debug/break_repeating_key_xor",
+            "program": "${workspaceRoot}/target/debug/5_break_repeating_key_xor",
             "preLaunchTask": "cargo build",
             "args": [],
             "cwd": "${workspaceRoot}"
