@@ -14,7 +14,9 @@ fn main() {
 	let mut bs = ByteStream::from_b64(&contents).unwrap();
 	let key = ByteStream::from_ascii("YELLOW SUBMARINE").unwrap();
 
+	// println!("{}\n\n\n\n\n", bs.into_ascii());
 	bs.decrypt_aes_128_ecb(key);
 
-	println!("{}", bs.into_ascii());
+	bs.into_ascii();
+	// println!("{}", bs.into_ascii());
 }

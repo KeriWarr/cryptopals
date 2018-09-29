@@ -297,7 +297,25 @@ impl ByteStream {
     }
 
     pub fn into_ascii(&self) -> String {
-        String::from_utf8_lossy(&self.data).into_owned()
+        let mut s = String::from_utf8_lossy(&self.data).into_owned();
+        let mut indices = Vec::new();
+        for (i, c) in s.get(0..64).unwrap().chars().enumerate() {
+            println!("{}", c as u8);
+            if c.is_ascii_control() && c != '\n' {
+                // if c == '\n' {
+                indices.push((i, c));
+            }
+        }
+
+        println!("{}", s.get(0..64).unwrap());
+        println!("{:?}", indices);
+
+        // indices.reverse();
+        // for (i, c) in indices {
+        //     s.replace_range(i..(i + 1), &c.escape_default().collect::<String>());
+        // }
+
+        s
     }
 
     pub fn push(&mut self, byte: u8) {
